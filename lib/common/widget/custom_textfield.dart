@@ -24,7 +24,12 @@ class CustomFormField extends StatelessWidget {
           ),
         ),
       ),
-      validator: (val) {},
+      validator: (val) {
+        if (val == null || val.isEmpty) {
+          return "Enter your $hinttext";
+        }
+        return null;
+      },
     );
   }
 }
