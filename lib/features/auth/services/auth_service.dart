@@ -1,7 +1,8 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:amazon_clone/features/home/screens/home.dart';
+import 'package:amazon_clone/common/widget/bottom_bar.dart';
+// import 'package:amazon_clone/features/home/screens/home.dart';
 import 'package:amazon_clone/provider/user_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -70,7 +71,7 @@ class AuthService {
             Provider.of<UserProvider>(context, listen: false).setUser(res.body);
             await pref.setString('x-auth-token', jsonDecode(res.body)['token']);
             Navigator.pushNamedAndRemoveUntil(
-                context, HomeScreen.routName, (route) => false);
+                context, BottomBar.routName, (route) => false);
           });
     } catch (e) {
       showSnackBar(context, e.toString());
@@ -78,10 +79,11 @@ class AuthService {
   }
   // get user data
 
-  void getUserData(BuildContext context) async {
+  getUserData(BuildContext context) async {
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-auth-token');
+      // print("token-----$token");
       if (token == null) {
         await prefs.setString('x-auth-token', '');
       }
@@ -90,6 +92,7 @@ class AuthService {
             'Content-Type': 'application/json; charset=UTF-8',
             'x-auth-token': token!
           });
+      // print("tokenRes-----${jsonDecode(tokenRes.body)}");
       var response = jsonDecode(tokenRes.body);
       if (response == true) {
         http.Response userRes = await http.get(Uri.parse('$uri/'),
@@ -98,11 +101,13 @@ class AuthService {
               'x-auth-token': token
             });
 
-        var userProvider = Provider.of<UserProvider>(context);
+        // print("userRes------${userRes.body}");
+        var userProvider = Provider.of<UserProvider>(context, listen: false);
         userProvider.setUser(userRes.body);
+        // print("userProvider------${userProvider.user}");
       }
     } catch (e) {
-      // showSnackBar(context, e.toString());
+      showSnackBar(context, e.toString());
     }
   }
 }
