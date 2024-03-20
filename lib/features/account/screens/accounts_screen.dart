@@ -1,5 +1,6 @@
 import 'package:amazon_clone/Constants/global_variables.dart';
 import 'package:amazon_clone/features/account/widgets/below_appbar.dart';
+import 'package:amazon_clone/features/account/widgets/orders.dart';
 import 'package:amazon_clone/features/account/widgets/top_button.dart';
 import 'package:flutter/material.dart';
 
@@ -55,6 +56,7 @@ class _AccountScreenState extends State<AccountScreen> {
           SizedBox(
             height: 20,
           ),
+          Orders()
         ],
       ),
     );
