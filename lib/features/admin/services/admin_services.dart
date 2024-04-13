@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:amazon_clone/Constants/error_handling.dart';
@@ -50,6 +51,63 @@ class AdminServices {
           onSuccess: () {
             showSnackBar(context, "Product added successfully");
             Navigator.pop(context);
+          });
+    } catch (e) {
+      print("error----$e");
+      showSnackBar(context, e.toString());
+    }
+  }
+
+  //get all products
+  Future<List<Product>> fetchAllPoducts(
+    BuildContext context,
+  ) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    List<Product> productList = [];
+    try {
+      http.Response res = await http
+          .get(Uri.parse('$uri/admin/get-products'), headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'x-auth-token': userProvider.user.token
+      });
+
+      httpErrorHandle(
+          response: res,
+          context: context,
+          onSuccess: () {
+            for (int i = 0; i < jsonDecode(res.body).length; i++) {
+              productList.add(
+                Product.fromJson(
+                  jsonEncode(jsonDecode(res.body)[i]),
+                ),
+              );
+            }
+          });
+    } catch (e) {
+      showSnackBar(context, e.toString());
+    }
+    return productList;
+  }
+
+  void deleteProduct(
+      {required BuildContext context,
+      required Product product,
+      required VoidCallback onSuccess}) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    try {
+      http.Response res =
+          await http.post(Uri.parse("$uri/admin/delete-product"),
+              headers: <String, String>{
+                'Content-Type': 'application/json; charset=UTF-8',
+                'x-auth-token': userProvider.user.token
+              },
+              body: jsonEncode({'id': product.id}));
+
+      httpErrorHandle(
+          response: res,
+          context: context,
+          onSuccess: () {
+            onSuccess();
           });
     } catch (e) {
       showSnackBar(context, e.toString());
