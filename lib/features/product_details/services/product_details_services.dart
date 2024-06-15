@@ -9,35 +9,28 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
-class SearchServices {
-  Future<List<Product>> fetchSearchedProducts(
-      {required BuildContext context, required String searchQuery}) async {
+class ProductDetailsServices {
+  void rateProduct({
+    required BuildContext context,
+    required Product product,
+    required double rating,
+  }) async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    List<Product> productList = [];
     try {
-      debugPrint("uri-----$uri");
-      http.Response res = await http.get(
-          Uri.parse('$uri/api/products/search/$searchQuery'),
+      http.Response res = await http.post(Uri.parse("$uri/api/rate-product"),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
             'x-auth-token': userProvider.user.token
-          });
+          },
+          body: jsonEncode({
+            'id': product.id!,
+            'rating': rating,
+          }));
 
-      httpErrorHandle(
-          response: res,
-          context: context,
-          onSuccess: () {
-            for (int i = 0; i < jsonDecode(res.body).length; i++) {
-              productList.add(
-                Product.fromJson(
-                  jsonEncode(jsonDecode(res.body)[i]),
-                ),
-              );
-            }
-          });
+      httpErrorHandle(response: res, context: context, onSuccess: () {});
     } catch (e) {
+      print("error----$e");
       showSnackBar(context, e.toString());
     }
-    return productList;
   }
 }

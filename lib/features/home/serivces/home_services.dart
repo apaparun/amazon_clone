@@ -15,6 +15,7 @@ class HomeServices {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Product> productList = [];
     try {
+      debugPrint("uri-----$uri");
       http.Response res = await http.get(
           Uri.parse('$uri/api/products?category=$category'),
           headers: <String, String>{

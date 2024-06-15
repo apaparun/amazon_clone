@@ -65,6 +65,7 @@ class AdminServices {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     List<Product> productList = [];
     try {
+      debugPrint("uri-----$uri");
       http.Response res = await http
           .get(Uri.parse('$uri/admin/get-products'), headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
